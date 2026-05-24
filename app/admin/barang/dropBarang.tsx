@@ -1,35 +1,57 @@
 'use client'
-import { useRouter } from 'next/navigation'
+
 import axios from "axios"
 import { BASE_API_URL } from "@/global"
 import { getCookie } from "cookies-next"
 
 const DropBarangButton = ({ id }: { id: number }) => {
-    const router = useRouter()
 
-   const handleDelete = async () => {
-    const token = getCookie("token")
-console.log("ID DELETE:", id)
-    const confirmDelete = window.confirm("Yakin hapus?")
-    if (!confirmDelete) return
+    const handleDelete = async () => {
 
-    try {
-        await axios.post(`${BASE_API_URL}/admin/updatebarang`, {
-            id: id
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`
+        const token = getCookie("token")
+
+        const confirmDelete = window.confirm("Yakin hapus?")
+        if (!confirmDelete) return
+
+        try {
+
+            const response = await axios.delete(
+                `${BASE_API_URL}/admin/hapusbarang/100`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    data: {
+                        id: id
+                    }
+                }
+            )
+
+            console.log(response.data)
+
+            const row = document.getElementById(`barang-${id}`)
+
+            if (row) {
+                row.remove()
             }
-        })
 
-        router.refresh()
-    } catch (err) {
-        console.log(err)
-    }
+        if (row) {
+    row.remove()
 }
 
+        } catch (err: any) {
+
+            console.log(err.response?.data)
+
+            alert("Gagal hapus")
+        }
+    }
+
     return (
-        <button onClick={handleDelete} className="bg-red-500 text-white px-2 py-1 rounded">
+        <button
+            onClick={handleDelete}
+            className="bg-red-500 text-white px-3 py-1 rounded"
+        >
             Drop
         </button>
     )
